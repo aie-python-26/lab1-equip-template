@@ -5,6 +5,7 @@
 """
 
 SLOTS = ("head", "body", "right_hand", "left_hand", "ring_1", "ring_2")
+# Не отдельное хранилище: просто два ключа из SLOTS, чтобы не писать их руками.
 HANDS = ("right_hand", "left_hand")
 
 
