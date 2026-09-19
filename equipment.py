@@ -39,15 +39,33 @@ class Player:
     def __repr__(self):
         return f"<{self.name} lvl={self.level} inv={len(self.inventory)}>"
 
-
 def equip(player, item):
-    """Надеть вещь из инвентаря. True — надели, False — не смогли."""
-    raise NotImplementedError
+    if player.level < item.level_req:
+        return False
+    if item.two_handed:
+        slots = ["right_hand", "left_hand"]
+    else:
+        slots = [item.slot]
+
+    old_slots = [player.slots[x] for x in slots if player.slots[x] is not None]
+
+    if len(player.inventory) - 1 + len(old_slots) > player.capacity:
+        return False
+
+    player.inventory.remove(item)
+
+    for slot in slots:
+        if player.slots[slot] is not None:
+            player.inventory.append(player.slots[slot])
+        player.slots[slot] = item
+
+    return True
 
 
 def unequip(player, slot):
-    """Снять вещь из слота в инвентарь. True — сняли, False — слот пуст."""
-    raise NotImplementedError
+
+
+
 
 
 def total_power(player):
