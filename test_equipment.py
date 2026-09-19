@@ -1,5 +1,5 @@
 from equipment import Item, Player, equip, unequip, total_power
-
+#дипсик писал тесты
 
 def test_equip_надел():
     p = Player("A")
@@ -41,23 +41,70 @@ def test_equip_двуручное():
     assert p.slots["left_hand"] is sword
 
 
-def test_unequip_пусто():
+
+
+
+def test_unequip_обычная():
     p = Player("A")
+    меч = Item("Меч", "right_hand")
+    p.slots["right_hand"] = меч
+
+    assert unequip(p, "right_hand") is True
+    assert p.slots["right_hand"] is None
+    assert меч in p.inventory
+
+
+def test_unequip_пустой_слот():
+    p = Player("A")
+
     assert unequip(p, "head") is False
+    assert p.slots["head"] is None
+    assert p.inventory == []
 
 
-def test_unequip_сломанная():
+def test_unequip_сломанная_вещь():
     p = Player("A")
     broken = Item("Сломанный", "head", durability=0)
     p.slots["head"] = broken
 
     assert unequip(p, "head") is True
+    assert p.slots["head"] is None
     assert broken in p.inventory
 
 
-def test_total_power():
+def test_unequip_двуручное_освобождает_обе_руки():
     p = Player("A")
-    p.slots["right_hand"] = Item("Меч", "right_hand", power=10)
-    p.slots["body"] = Item("Броня", "body", power=5, durability=0)
+    двуручник = Item("Двуручник", "right_hand", two_handed=True)
+    p.slots["right_hand"] = двуручник
+    p.slots["left_hand"] = двуручник
 
-    assert total_power(p) == 10
+    assert unequip(p, "right_hand") is True
+    assert p.slots["right_hand"] is None
+    assert p.slots["left_hand"] is None
+    assert двуручник in p.inventory
+
+
+def test_unequip_инвариант():
+    def count(p):
+        return len(p.inventory) + sum(1 for v in p.slots.values() if v is not None)
+
+    p = Player("A")
+    меч = Item("Меч", "right_hand")
+    p.slots["right_hand"] = меч
+
+    before = count(p)
+    unequip(p, "right_hand")
+    assert count(p) == before
+
+
+if __name__ == "__main__":
+    test_equip_надел()
+    test_equip_слот_занят()
+    test_equip_уровень_мал()
+    test_equip_двуручное()
+    test_unequip_обычная()
+    test_unequip_пустой_слот()
+    test_unequip_сломанная_вещь()
+    test_unequip_двуручное_освобождает_обе_руки()
+    test_unequip_инвариант()
+    print("OK")

@@ -63,11 +63,30 @@ def equip(player, item):
 
 
 def unequip(player, slot):
+    if player.slots[slot] is None:
+        return False
 
+    item = player.slots[slot]
+
+    if item.two_handed:
+        player.slots["right_hand"] = None
+        player.slots["left_hand"] = None
+    else:
+        player.slots[slot] = None
+
+    player.inventory.append(item)
+
+    return True
 
 
 
 
 def total_power(player):
-    """Сила всех надетых вещей. Сломанная вещь даёт 0."""
-    raise NotImplementedError
+    total = 0
+    for slot in SLOTS:
+        item = player.slots[slot]
+        if item is None:
+            continue
+        if item.durability > 0:
+            total += item.power
+    return total
